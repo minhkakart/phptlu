@@ -64,7 +64,7 @@ $articles = $stmt->fetchAll();
                 <?= $article['created'] ?>
             </div>
             <div class="col-md-1">
-                <a href="#"><i class="bi bi-pencil-square"></i></a>
+                <a href="updateAnarticleView.php?id=<?= $article['id'] ?>"><i class="bi bi-pencil-square"></i></a>
             </div>
             <div class="col-md-1">
                 <a href="deleteArticle.php?id=<?= $article['id'] ?>"><i class="bi bi-trash3"></i></a>

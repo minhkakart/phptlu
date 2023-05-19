@@ -14,18 +14,8 @@ if ($_POST['category'] == '<-- Select Category -->' && $_POST['member'] == '<-- 
     $title = $_POST['title'];
     $summery = $_POST['summery'];
     $content = $_POST['content'];
-    $category = $_POST['category'];
-    $member = $_POST['member'];
-
-    $sql_category_id = "select c.id as cId from category c where c.name = '$category'";
-    $stmt = $pdo->prepare($sql_category_id);
-    $stmt->execute();
-    $category_id = $stmt->fetch()['cId'];
-
-    $sql_member_id = "select m.id as mId from member m where m.forename like '$member'";
-    $stmt = $pdo->prepare($sql_member_id);
-    $stmt->execute();
-    $member_id = $stmt->fetch()['mId'];
+    $category_id = (int)$_POST['category'];
+    $member_id = (int)$_POST['member'];
 
     $sql_insert = 'insert into article (title, summary, content, created, category_id, member_id, image_id, published) values (?,?,?, NOW(),?,?, 1, 1)';
     $stmt = $pdo->prepare($sql_insert);

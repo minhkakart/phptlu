@@ -2,8 +2,16 @@
 require_once 'includes/header.php';
 require_once 'connectdatabase.php';
 
+$article_id = (int) $_GET['id'];
+
+$sql_article = 'select * from article where id = ?';
 $sql_category = 'select id, name from category';
 $sql_members = 'select id,forename, surname from member';
+
+$stmt = $pdo->prepare($sql_article);
+$stmt->bindValue(1, $article_id, PDO::PARAM_INT);
+$stmt->execute();
+$article = $stmt->fetch();
 
 $stmt = $pdo->prepare($sql_category);
 $stmt->execute();
@@ -13,50 +21,56 @@ $stmt = $pdo->prepare($sql_members);
 $stmt->execute();
 $members = $stmt->fetchAll();
 
+function isChecked($id, $article)
+{
+    return $id == $article ? true : false;
+}
+
 ?>
 
 <div class="main">
-    <?php
-    if (isset($_GET['err'])) {
-    ?>
-        <div style="
-        font-size: x-large;
-        color: red;
-    ">
-            <?= $_GET['err']; ?>
+
+    <h2>Sửa bài viết</h2>
+    <form action="updateAnarticle.php?id=<?= $article_id ?>" method="POST">
+        <div class="row mb-3">
+            <label for="article-id" class="col-sm-2 col-form-label">Id</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="article-id" readonly value="<?= $article_id ?>">
+            </div>
         </div>
-    <?php
-    }
-    ?>
-    <h2>Thêm bài viết</h2>
-    <form action="addArticle.php" method="POST">
         <div class="row mb-3">
             <label for="title" class="col-sm-2 col-form-label">Title</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="title">
+                <input type="text" class="form-control" name="title" value="<?= $article['title'] ?>">
             </div>
         </div>
         <div class="row mb-3">
             <label for="summery" class="col-sm-2 col-form-label">Summery</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="summery">
+                <input type="text" class="form-control" name="summery" value="<?= $article['summary'] ?>">
             </div>
         </div>
         <div class="row mb-3">
             <label for="content" class="col-sm-2 col-form-label">Content</label>
             <div class="col-sm-10">
-                <textarea class="form-control" name="content" rows="7"></textarea>
+                <textarea class="form-control" name="content" rows="7"><?= $article['content'] ?></textarea>
             </div>
         </div>
         <div class="row mb-3">
             <label for="category" class="col-sm-2 col-form-label">Category</label>
             <div class="col-sm-10">
                 <select name="category" id="category">
-                    <option value="<-- Select Category -->" selected><-- Select Category --></option>
                     <?php
                     foreach ($categories as $category) {
                         ?>
-                        <option value="<?= $category['id'] ?>"><?= $category['name'] ?></option>
+                        <option value="<?= $category['id'] ?>" 
+                        <?php 
+                        if(isChecked($category['id'], $article['category_id'])){
+                        ?>
+                        selected
+                        <?php
+                        }
+                        ?>><?= $category['name'] ?></option>
                         <?php
                     }
                     ?>
@@ -67,11 +81,18 @@ $members = $stmt->fetchAll();
             <label for="member" class="col-sm-2 col-form-label">Member</label>
             <div class="col-sm-10">
                 <select name="member" id="member">
-                    <option value="<-- Select Member -->" selected><-- Select Member --></option>
                     <?php
                     foreach ($members as $member) {
                         ?>
-                        <option value="<?= $member['id'] ?>"><?= $member['forename'] . ' ' . $member['surname'] ?></option>
+                        <option value="<?= $member['id'] ?>"
+                        <?php 
+                        if(isChecked($member['id'], $article['member_id'])){
+                        ?>
+                        selected
+                        <?php
+                        }
+                        ?>
+                        ><?= $member['forename'] . ' ' . $member['surname'] ?></option>
                         <?php
                     }
                     ?>
@@ -115,7 +136,7 @@ $members = $stmt->fetchAll();
                 </div>
             </div>
         </div> -->
-        <button type="submit" class="btn btn-primary">Thêm</button>
+        <button type="submit" class="btn btn-primary">Xác nhận</button>
     </form>
 </div>
 
